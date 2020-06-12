@@ -146,7 +146,7 @@
                     message.innerHTML=html
                    // console.log(JSON.parse(xhr.response))
                   } 
-                  loadComments(id) }
+                  loadComments(id,'http://127.0.0.1:3000/posts?id='+id) }
             }
             xhr.open(requesttype,'http://127.0.0.1:3000/posts?id='+id,true)
             xhr.send()
@@ -154,6 +154,18 @@
     
 
 }
+function loadComments(id,url){
+    var xhr= new XMLHttpRequest
+            xhr.onreadystatechange=function(){
+                if(xhr.readyState===4 && xhr.status===200){
+                    // message.innerHTML='<p>'+xhr.response[0].id+'</p>'
+                   
+            }
+            xhr.open(requesttype,url,true)
+            xhr.send()
+}
+
+
         function makerequest(url,requesttype,data){
             var count
             var xhr= new XMLHttpRequest
@@ -180,7 +192,7 @@
             ajax.open(requesttype,url,true)
             ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded")
             ajax.send(data)
-
+        }
         }
     </script>
 </html>
