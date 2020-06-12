@@ -1,0 +1,186 @@
+<html>
+    <head>
+        <style>
+  .btn{
+      border: 1px solid black;
+      padding:10px;
+      display:inline-block;
+      width:70px;
+      text-align: center;
+
+  }
+  .hide{display:none}
+  form{
+      background-color:aquamarine;
+      border: 1px solid brown;
+      padding:10px;
+  }
+        </style>
+    </head>
+    <body>
+
+        
+
+        <div id="load1" class="btn hide ">dont click</div>
+        <div id="send" class="btn hide">send</div>
+        <div id="pageinfo"></div>
+        <div id="prev" class="btn"> Prev</div>
+        <div id="next" class="btn">Next</div>
+        <div id="message"></div>
+        <form id="myform">
+           <input type="text" name="first" value="sunny"/><br>
+           <input type="text" name="last" value="vela" >
+            <input type="submit" value="Send Data" />
+
+        </form>
+        
+   <input type="text" name="search" id="s"><button class="btn" id="search">Search</button>
+   <br>
+   <textarea id="comments"></textarea><button class="btn" id="addcomment" >Add Comment </button>
+   <div id="output"></div>
+    </body>
+    <script>
+       
+    
+        var id=1
+        var prev=document.querySelector('#prev')
+        prev.addEventListener('click',function(e){
+            id--
+            loadpage('GET')  
+        })
+        var next=document.querySelector('#next')
+        next.addEventListener('click',function(e){
+            id++
+            loadpage('GET')  
+        })
+
+        var form=document.querySelector('#myform')
+        form.addEventListener('submit',function(e){
+            e.preventDefault()
+          var data=""
+         var el=document.querySelectorAll('form input[type="text"]')
+         for(var i=0;i<el.length;i++){
+            var name=el[i].name
+         var value=el[i].value
+          data+=name+'='+value+'&'
+         }
+           data.slice(0,-1)
+            sendrequest('http://127.0.0.1:3000/posts','POST',data)
+           
+        })
+        var search=document.querySelector('#search')
+        search.addEventListener('click',function(){
+            var s=document.querySelector('#s').value
+            var xhr= new XMLHttpRequest
+            xhr.onreadystatechange=function(){
+                if(xhr.readyState===4 && xhr.status===200){
+
+                    {
+                   
+                    var myObj=JSON.parse(xhr.response)
+                     var html=""
+                     for(var j=0;j<myObj.length;j++){
+                    for(var key in myObj[j])
+                    { html+='<b>'+key+'</b>:'+myObj[j][key]+'<br>' }
+                    message.innerHTML=html
+                   // console.log(myObj)
+                     }
+                   // console.log(JSON.parse(xhr.response))
+                  }  }
+            }
+            xhr.open('GET','http://127.0.0.1:3000/posts?q='+s,true)
+            xhr.send()
+
+    
+
+           
+        })
+        var comment=document.querySelector('#addcomment')
+       comment.addEventListener('click',function(){
+        var c=document.querySelector('#comments').value
+        var data=""
+        var ajax=new XMLHttpRequest()
+            ajax.onreadystatechange=function(){
+                if(ajax.readyState===4 ){
+                    console.log(JSON.parse(ajax.responseText))
+                   data+='postid='+id+'&'+'comment='+c
+                }
+            }
+
+            ajax.open('POST','127.0.0.1:3000/comments',true)
+            ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+            ajax.send(data)
+
+        
+            
+           
+        })
+
+
+        var load1=document.querySelector('#load1')
+        load1.addEventListener('click',function(){
+            console.log("works")
+            makerequest('http://127.0.0.1:3000/posts','POST',{})})
+
+            var send=document.querySelector('#send')
+        send.addEventListener('click',function(){
+            console.log("works")
+            sendrequest('http://127.0.0.1:3000/posts','POST','first=John&last=json')
+        
+           
+        })
+
+
+   
+        function loadpage(requesttype){
+    var xhr= new XMLHttpRequest
+            xhr.onreadystatechange=function(){
+                if(xhr.readyState===4 && xhr.status===200){
+
+                    {
+                   
+                    var myObj=JSON.parse(xhr.response)
+                     var html=""
+                    for(var key in myObj[0])
+                    { html+='<b>'+key+'</b>:'+myObj[0][key]+'<br>' }
+                    message.innerHTML=html
+                   // console.log(JSON.parse(xhr.response))
+                  } 
+                  loadComments(id) }
+            }
+            xhr.open(requesttype,'http://127.0.0.1:3000/posts?id='+id,true)
+            xhr.send()
+
+    
+
+}
+        function makerequest(url,requesttype,data){
+            var count
+            var xhr= new XMLHttpRequest
+            xhr.onreadystatechange=function(){
+                if(xhr.readyState===4 && xhr.status===200){
+                    // message.innerHTML='<p>'+xhr.response[0].id+'</p>'
+                   var cons=xhr.response
+                    
+                    console.log(cons)
+                }
+            }
+            xhr.open(requesttype,url,true)
+            xhr.send()
+           
+        }
+        function sendrequest(url,requesttype,data){
+            var ajax=new XMLHttpRequest()
+            ajax.onreadystatechange=function(){
+                if(ajax.readyState===4 ){
+                    console.log(JSON.parse(ajax.responseText))
+                }
+            }
+
+            ajax.open(requesttype,url,true)
+            ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+            ajax.send(data)
+
+        }
+    </script>
+</html>
